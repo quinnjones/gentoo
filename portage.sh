@@ -58,12 +58,13 @@ function _error_exit
 
 function _help
 {
-    cat <<EOL
+    cat - <<EOL
 portage.sh [options]
 
 Defaults to being a $TYPE.
 
 Try --man for more information.
+
 EOL
 
     exit 254
@@ -71,7 +72,7 @@ EOL
 
 function _man
 {
-    cat <<EOF
+    less <<EOF
 NAME
     portage.sh - Update the local portage tree using squashfs files
 
@@ -79,7 +80,7 @@ SYNOPSIS
     execute as a $TYPE:
       portage.sh
 
-    force execution as a client, copying and mounting a squashed file:
+    execute as a client, copying and mounting a squashed file:
       portage.sh -c
 
     execute as a server and sync against a public server:
@@ -111,17 +112,27 @@ DESCRIPTION
     There may be minor advantages for SSD and flash storage in that
     overall writes may be reduced.
 
-    Given the previous description, several dependencies stand out:
+CONFIGURATION
+
+    Given the description, several implied dependencies stand out:
 
     * a kernel compiled with SQUASHFS, SQUASHFS_XZ, and TMPFS
-    * 'sys-fs/squashfs-tools' installed on the local server
-    * a shared network file system with which to share the file to
-      clients.
+    * 'sys-fs/squashfs-tools' installed on the distribution server
+    * a shared network file system with which to distribute the file
+      to clients.
 
-    You should also add the following line to /etc/fstab, adjusting
-    the path as necessary:
+    Server and clients should mount the squashed portage at boot:
 
-        $SQFS $PORTDIR squashfs loop 0 0
+        echo $SQFS $PORTDIR squashfs loop 0 0 >>/etc/fstab
+
+    squashfs filesystems are read-only, so 'distfiles' and 'pkgdir'
+    need to live somewhere else.  If you're managing multiple clients
+    then you should keep distfiles in shared directories, rather than
+    having each client download and store duplicate copies of the
+    sources:
+
+        echo DISTDIR="/net/fileserver/distfiles" >>/etc/portage/make.conf
+        echo PKGDIR="/net/fileserver/pkgdir/\$ARCH" >>/etc/portage/make.conf
 
 OPTIONS
 
@@ -143,7 +154,8 @@ OPTIONS
         Print a help message
 
     --local-path
-        Set the local portage file location.  Defaults to '$SQFS'.
+        Set the local portage file location.
+        Defaults to '$SQFS'.
 
     --man
         Print a man page
@@ -152,13 +164,15 @@ OPTIONS
         Set the parent portage directory.  Defaults to '$PORTDIR'.
 
     -s, --server
-        Update a server's portage copy, which drops and re-shares NFS
-        during the process and puts the squashed portage file into a
-        shared location
+        Update a server's portage copy.  Portage is sync'ed using
+        'emerge --sync' after un-exporting '$PORTDIR' (if exported).
+        After the sync is completed the squashed file is put into
+        place, '$PORTDIR' is remounted, and the original NFS exports
+        are re-exported.
 
     --no-sync
-        (server mode) Do everything but an actual sync with public
-        servers.  Useful for avoiding bans while testing.
+        (server mode only) Do everything but 'emerge --sync'.  Useful
+        for avoiding portage rsync bans while testing.
 
     --remote-path PATH
         Set a pick-up location for new squashed portage files.  Defaults
