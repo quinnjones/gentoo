@@ -35,12 +35,16 @@ DEBUG=
 # if true, enables verbose output to show work being done (--verbose)
 VERBOSE=
 
+dst=$PORTDIR.sqfs
+
 eixupdate=$(which eix-update)
 
 cksum=$(which md5sum)
 
 rsync=$(which rsync)
 rsync_opts=( -q )
+
+src=$SQUASHED_SRC
 
 ##############################
 # end user-serviceable parts #
@@ -202,7 +206,17 @@ function _man
 	    --verbose, --no-verbose
 	        Enable/disable verbose output showing current activity
 	
-	EXAMPLES
+	DEFAULTS
+	
+	A default source file may be set by adding a line like this to
+	your environment or /etc/portage/make.conf:
+	
+	    SQUASHED_SRC=/path/to/squashed/file
+	
+	Setting this variable allows you skip the --source argument.
+	
+	The default destination file is $PORTDIR.sqfs.  Override it with
+	--destination.
 	
 	TERMS & CONDITIONS
 	
