@@ -210,7 +210,7 @@ function _man
 
 	  Sub-mounts
 	    File systems mounted under PORTDIR shall be unmounted and
-        re-mounted afterwards.  These mounts may fail if the target
+	    re-mounted afterwards.  These mounts may fail if the target
 	    directory is no longer available.
 
 	  Exported Filesystems
@@ -247,7 +247,7 @@ function _man
 
 	    The above shall not be construed to imply fitness for any
 	    particular use. There are no guarantees. Always test on
-        something unimportant before using on a critical task.
+	    something unimportant before using on a critical task.
 
 	AUTHOR
 
