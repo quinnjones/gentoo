@@ -545,6 +545,8 @@ mkdir -p "$basedir"
 
 _debug mv "$tmpdst" "$path"
 mv "$tmpdst" "$path"
+_debug chmod 644 "$path"
+chmod 644 "$path"
 
 # mount the squashed filesystem at $PORTDIR, if requested
 if [[ -n "$MOUNT" ]]; then
