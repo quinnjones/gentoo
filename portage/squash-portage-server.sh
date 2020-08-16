@@ -443,8 +443,20 @@ if [[ -n $tmpfs ]]; then
         _debug "$unsq" -d "$portdir" $unsq_opts "$path"
         "$unsq" -d "$portdir" $unsq_opts "$path"
     else
-        _debug $rsync $rsync_opts $PORTDIR/ $portdir
-        "$rsync" $rsync_opts "$PORTDIR/" "$portdir"
+        portdircontents="$(ls -A $portdir)"
+
+        if [[ -z $portdircontents ]]; then
+            portdir_orig=$PORTDIR
+
+            export PORTDIR=$portdir
+            _debug emerge-webrsync
+            emerge-webrsync
+
+            PORTDIR=$portdir_orig
+        else
+            _debug $rsync $rsync_opts $PORTDIR/ $portdir
+            "$rsync" $rsync_opts "$PORTDIR/" "$portdir"
+        fi
     fi
 fi
 
