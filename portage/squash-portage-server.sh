@@ -204,6 +204,19 @@ function _man
 	    --verbose, -v, --no-verbose
 	        Enable/disable verbose output showing current activity
 
+	Mounted Filesystems
+	    If the option to mount the squashed filesystem at PORTDIR
+	    after squashing is used, some considerations are taken:
+
+	  Sub-mounts
+	    File systems mounted under PORTDIR shall be unmounted and
+        re-mounted afterwards.  These mounts may fail if the target
+	    directory is no longer available.
+
+	  Exported Filesystems
+	    If PORTDIR or a subdirectory is exported via NFS, the export
+	    shall be un-exported and re-exported.
+
 	Requirements
 
 	    * sys-fs/squashfs-tools installed
@@ -230,11 +243,11 @@ function _man
 	    As always, everyone's situation is a little different,
 	    read all rules and conditions, YMMV.
 
-	CONDITIONS
+	TERMS & CONDITIONS
 
 	    The above shall not be construed to imply fitness for any
 	    particular use. There are no guarantees. Always test on
-        an unimportant system before using on a critical task.
+        something unimportant before using on a critical task.
 
 	AUTHOR
 
