@@ -118,155 +118,188 @@ function _man
 {
     cat <<-EOF
 	NAME
+	
 	    $progname - Update and squash portage
-
+	
 	SYNOPSIS
+	
 	    $progname [options]
-
+	
 	DESCRIPTION
-
+	
 	    Squash your portage tree, optionally after syncing it.
-
+	
 	    If a previously-squashed filesystem already exists in the
 	    target location it shall be used to 'prime' the portage
 	    tree; if the file does not exist then a copy of PORTDIR
-	    shall be made using rsync.  By default, the portage tree is
+	    shall be made using rsync. By default, the portage tree is
 	    then synced.
-
+	
 	    After squashing, the program may optionally mount the
 	    squashed filesystem locally as PORTDIR.
-
+	
 	Options
-
+	
 	    --debug, --no-debug
 	        Enable/disable debugging output
-
+	
 	    --destination, -d
 	        Specify an alternate location to save the squashed repo.
 	        You may want to specify a path inside an existing shared
 	        directory, for example.
-
+	
 	        Defaults to "$path".
-
+	
 	    --emaint
-	        Specify an alternative emaint executable.
-
+	        Specify an alternative emaint executable. Implies --sync.
+	
 	    --eix-update, --no-eix
 	        Specify an alternative eix-update binary, or disable eix
 	        indexing even if it's installed.
-
+	
 	    --help, -h
 	        Display a basic help message
-
+	
 	    --man
 	        Display comprehensive help
-
+	
 	    --mksquashfs
 	        Specify an alternate "mksquashfs" executable
-
+	
 	    --mksquashfs-opt
 	        Add options to be passed to mksquashfs. May be given
 	        multiple times.
-
+	
 	    --mount, --no-mount
 	        After squashing the repo, it may optionally be mounted at
-	        PORTDIR.  Existing sub-mounts and NFS exports shall be
+	        PORTDIR. Existing sub-mounts and NFS exports shall be
 	        saved and remounted/re-exported.
-
+	
 	    --path
 	        Specify an alternate PATH, which affects where the default
 	        executables will be found.
-
+	
 	        Defaults to "$PATH".
-
+	
 	    --portdir
 	        Specify an alternate location for "PORTDIR"; defaults to
 	        whatever you've set in "make.conf", currently set to
 	        "$PORTDIR".
-
+	
 	    --repo
 	        Specify an alternate repo to squash.
-
+	
 	        Defaults to "$repo".
-
+	
 	    --rsync
 	        Specify an alternate "rsync" executable
-
+	
 	    --rsync-opts
 	        Add options to be passed to rsync. May be given multiple
 	        times.
-
+	
 	    --sync, --no-sync
 	        Execute "emaint sync" on the repo before squashing it
-
+	
 	    --unsquashfs
 	        Specify an alternate "unsquashfs" executable
-
+	
 	    --unsquashfs-opt
 	        Add options to be passed to unsquashfs. May be given
 	        multiple times.
-
+	
 	    --tmp-location
 	        Assign an alternate location for mounting, copying,
 	        syncing, and squashing portage. Default is to create a
 	        tmpfs mount.
-
+	
 	    --tmp-location-opt
 	        Set options for the mount command when mounting the tmp
 	        location
-
+	
 	    --verbose, -v, --no-verbose
 	        Enable/disable verbose output showing current activity
-
+	
 	Mounted Filesystems
 	    If the option to mount the squashed filesystem at PORTDIR
 	    after squashing is used, some considerations are taken:
-
-	  Sub-mounts
-	    File systems mounted under PORTDIR shall be unmounted and
-	    re-mounted afterwards.  These mounts may fail if the target
-	    directory is no longer available.
-
-	  Exported Filesystems
-	    If PORTDIR or a subdirectory is exported via NFS, the export
-	    shall be un-exported and re-exported.
-
+	
+	    Sub-mounts
+	        File systems mounted under PORTDIR shall be unmounted and
+	        re-mounted afterwards. These mounts may fail if the target
+	        directory is no longer available.
+	
+	    Exported Filesystems
+	        If PORTDIR or a subdirectory is exported via NFS, the
+	        export shall be un-exported and re-exported.
+	
 	Requirements
-
-	    * sys-fs/squashfs-tools installed
-	    * ~600 megs of free RAM (if using the default tmpfs).  The
+	
+	    * sys-fs/squashfs-tools
+	    * net-misc/rsync
+	    * ~600 megs of free RAM (if using the default tmpfs). The
 	      RAM is consumed temporarily, and released after squashing.
 	    * kernel support for squashfs, if mounting the squashed file-
 	      system locally afterwards.
-
+	
+	    Optional Packages
+	
+	        * app-portage/eix for fast portage indexing
+	        * net-fs/nfs-utils to export filesystems over NFS
+	
 	Performance
-
+	
 	    As of this writing, an uncompressed portage tree consumes
 	    nearly 300 MB of disk space; a gzip-squashed filesystem
 	    consumes less than 60 MB.
-
+	
 	    It is frequently faster to copy the squashed filesystem
 	    between nodes than rsyncing portage, even if the rsync
 	    occurs between nodes on the LAN.
-
+	
 	    Reading portage, e.g. calculating dependencies, may be
-	    faster when backed by a squashed filesystem.  The entire
+	    faster when backed by a squashed filesystem. The entire
 	    file can be effectively cached in memory by the kernel,
 	    reducing disk accesses.
-
+	
 	    As always, everyone's situation is a little different,
 	    read all rules and conditions, YMMV.
-
+	
+	EXAMPLES
+	
+	    I like to keep a copy of a squashed portage on my file server
+	    under /storage, which is accessible to other machines on my
+	    LAN. I run this script weekly via cron.
+	
+	        $progname --sync --mount \\
+	            --destination /storage/portage.sqfs
+	
+	    You may also squash overlay repos. If you use the popular
+	    'andy' overlay, your command might look like:
+	
+	        $progname --sync --mount \\
+	            --portdir /var/db/repos/andy \\
+	            --repo andy --destination /storage/andy.sqfs \\
+	
+	    Clients may use a simpler script to copy the squashed portage
+	    and mount it to their PORTDIR location. See my github for
+	    a script that does this.
+	
 	TERMS & CONDITIONS
-
+	
 	    The above shall not be construed to imply fitness for any
 	    particular use. There are no guarantees. Always test on
 	    something unimportant before using on a critical task.
-
+	
+	LICENSE
+	
+	    Licensed under the GPLv2.
+	
 	AUTHOR
-
+		
 	    Quinn Jones, quinn_jones@pobox.com
-
+	    Github: https://github.com/quinnjones
+		
 EOF
 }
 
