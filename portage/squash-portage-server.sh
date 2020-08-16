@@ -44,7 +44,7 @@ tmpfs="tmpfs"
 path="$PORTDIR.sqfs"
 
 # which emaint program to run, and repo to sync (--emaint)
-emaint="$(which emaint)"
+emaint=
 # repo to squash (--repo)
 repo=gentoo
 
@@ -428,8 +428,6 @@ _debug \$basedir:$basedir \$file:$file
 
 if [[ -z "$PORTDIR" ]]; then
     _error_exit "\$PORTDIR not set"
-elif [[ -z "$emaint" ]]; then
-    _error_exit "Cannot locate portage's emaint"
 elif [[ -z "$mksq" ]]; then
     _error_exit "Cannot locate mksquashfs"
 elif [[ -z "$unsq" ]]; then
