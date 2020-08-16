@@ -108,10 +108,10 @@ function _help
 {
     cat <<-EOF
 	$progname [options]
-
+	
 	Try --man for detailed help
-
-EOF
+	
+	EOF
 }
 
 function _man
@@ -300,7 +300,7 @@ function _man
 	    Quinn Jones, quinn_jones@pobox.com
 	    Github: https://github.com/quinnjones
 		
-EOF
+	EOF
 }
 
 function cleanup
