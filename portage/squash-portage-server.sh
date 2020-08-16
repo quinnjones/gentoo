@@ -100,7 +100,7 @@ function _verbose
 
 function _error_exit
 {
-    echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+    echo "${progname}: ${1:-"Unknown Error"}" 1>&2
     exit 1
 }
 
@@ -312,7 +312,7 @@ function cleanup
     local dir
 
     for dir in $portdir; do
-        if [[ -n "$dir" ]]; then
+        if [[ -d "$dir" ]]; then
             if ( mountpoint "$portdir" > /dev/null ); then
                 unmount $portdir
             fi
@@ -320,7 +320,7 @@ function cleanup
     done
 
     for dir in "$portdir" "$tmpdst"; do
-        if [[ -e "$dir" ]]; then
+        if [[ -d "$dir" ]]; then
             _debug rm -Rf "$dir"
             rm -Rf "$dir"
         fi
