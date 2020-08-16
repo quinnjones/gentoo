@@ -56,6 +56,7 @@ eixupdate=$(which eix-update)
 mksq=$(which mksquashfs)
 mksq_opts=( -comp gzip
             -no-progress
+            -noappend
           )
 
 unsq=$(which unsquashfs)
@@ -440,6 +441,8 @@ fi
 
 portdir=$PORTDIR
 
+_debug \$portdir:$portdir \$PORTDIR:$PORTDIR
+
 # copy the existing squashed portdir or current portdir to a temporary
 # location. That location will (optionally) be sync'ed and used to
 # create a new squashed portage
@@ -467,7 +470,7 @@ if [[ -n $tmpfs ]]; then
         _debug "$unsq" -d "$portdir" $unsq_opts "$path"
         "$unsq" -d "$portdir" $unsq_opts "$path"
     else
-        portdircontents="$(ls -A $portdir)"
+        portdircontents="$(ls -A $PORTDIR)"
 
         if [[ -z $portdircontents ]]; then
             portdir_orig=$PORTDIR
@@ -501,8 +504,8 @@ fi
 _verbose squashing temporary location
 
 tmpdst=$(mktemp)
-_debug "$mksq" "$portdir" "$tmpdst" -noappend ${mksq_opts[@]}
-"$mksq" "$portdir" "$tmpdst" -noappend ${mksq_opts[@]}
+_debug "$mksq" "$portdir" "$tmpdst" ${mksq_opts[@]}
+"$mksq" "$portdir" "$tmpdst" ${mksq_opts[@]}
 
 _debug mkdir -p $basedir
 mkdir -p "$basedir"
