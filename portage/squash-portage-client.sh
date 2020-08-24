@@ -175,7 +175,7 @@ function _man
 	    --debug, --no-debug
 	        Enable/disable debugging output
 	
-	    --destination, --dest, -d
+	    --destination /path/to/file, --dst, -d
 	        Specify a location to store the squashed portage.
 	
 	    --eix-update, --no-eix
@@ -199,7 +199,7 @@ function _man
 	        Add options to be passed to rsync. May be given multiple
 	        times.
 	
-	    --source, --src, -s
+	    --source /path/to/file, --src, -s
 	        Source location of the squashed portage. May use rsync
 	        host:src conventions.
 	
@@ -246,7 +246,7 @@ while [[ $# -gt 0 ]]; do
     case $key in
         --debug                 ) DEBUG=1 ;;
         --no-debug              ) unset DEBUG ;;
-        --destination|--dest|-d ) dst=$1; shift ;;
+        --destination|--dst|-d  ) dst=$1; shift ;;
         --eix-update            ) eixupdate=$1; shift ;;
         --help                  ) _help; exit ;;
         --man                   ) _man; exit ;;
@@ -264,9 +264,9 @@ trap cleanup SIGHUP SIGINT SIGTERM EXIT
 if [[ -z "$PORTDIR" ]]; then
     _error_exit "\$PORTDIR not set"
 elif [[ -z "$dst" ]]; then
-    _error_exit "Destination may not be empty"
+    _error_exit "Destination may not be empty, see --destination option"
 elif [[ -z "$src" ]]; then
-    _error_exit "Source file may not be empty"
+    _error_exit "Source file may not be empty, see --source option"
 fi
 
 
