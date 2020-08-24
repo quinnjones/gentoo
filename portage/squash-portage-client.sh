@@ -140,17 +140,17 @@ function cleanup
 
 function _help
 {
-    cat <<-EOF
+	cat <<-EOF
 	$progname [options] -s /src/file -d /dst/file
-
-    Try --man for detailed help
+	
+	Try --man for detailed help
 	
 	EOF
 }
 
 function _man
 {
-    cat <<-EOF
+	cat <<-EOF
 	NAME
 	
 	    $progname - Copy a squashed portage and mount it at PORTDIR
