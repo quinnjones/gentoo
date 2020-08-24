@@ -19,10 +19,6 @@
 #
 # Try executing with --help or --man for information
 
-# pull in portage settings
-
-source /etc/portage/make.conf
-
 ################################
 # begin user-serviceable parts #
 ################################
@@ -34,6 +30,10 @@ DEBUG=
 
 # if true, enables verbose output to show work being done (--verbose)
 VERBOSE=
+
+# pull in portage settings
+
+source /etc/portage/make.conf
 
 dst=$PORTDIR.sqfs
 
