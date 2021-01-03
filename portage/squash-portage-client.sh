@@ -42,7 +42,7 @@ eixupdate=$(which eix-update)
 cksum=$(which md5sum)
 
 rsync=$(which rsync)
-rsync_opts=( -q )
+rsync_opts=( -q -L )
 
 src=$SQUASHED_SRC
 
