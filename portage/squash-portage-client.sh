@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-# Copyright (C) 2020 by Quinn Jones, quinn_jones@pobox.com
+# Copyright (C) 2020-2021 by Quinn Jones, quinn_jones@pobox.com
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,10 +23,10 @@
 # begin user-serviceable parts #
 ################################
 
-PATH=/bin:/usr/bin:/sbin:/usr/sbin
-
 # if true, enables debug messaging (--debug)
 DEBUG=
+
+PAGER="${PAGER:='less'}"
 
 # if true, enables verbose output to show work being done (--verbose)
 VERBOSE=
@@ -35,6 +35,7 @@ VERBOSE=
 
 source /etc/portage/make.conf
 
+# default to storing the file in the same parent location as PORTDIR
 dst=$PORTDIR.sqfs
 
 eixupdate=$(which eix-update)
@@ -150,15 +151,16 @@ function _help
 
 function _man
 {
-	cat <<-EOF
+	cat <<-EOF | less
 	NAME
 	
 	    $progname - Copy a squashed portage and mount it at PORTDIR
 	
 	SYNOPSIS
 	
-	    $progname -s /net/files/storage/portage.sqfs \\
-	        -d /var/db/repos/gentoo.sqfs
+	    $progname \\
+	        -s ${SQUASHED_SRC:-'/net/files/storage/portage.sqfs'} \\
+	        -d $PORTDIR.sqfs
 	
 	DESCRIPTION
 	
@@ -189,8 +191,8 @@ function _man
 	        Display comprehensive help
 	
 	    --portdir
-	        Specify an alternative PORTDIR location. Default is to
-	        use the PORTDIR defined in portage.conf.
+	        Specify an alternative \$PORTDIR location. Default is to
+	        use the \$PORTDIR defined in portage.conf.
 	
 	    --rsync
 	        Specify an alternate "rsync" executable
@@ -215,7 +217,7 @@ function _man
 	
 	Setting this variable allows you skip the --source argument.
 	
-	The default destination file is $PORTDIR.sqfs.  Override it with
+	The default destination file is \$PORTDIR.sqfs. Override it with
 	--destination.
 	
 	TERMS & CONDITIONS
@@ -248,7 +250,7 @@ while [[ $# -gt 0 ]]; do
         --no-debug              ) unset DEBUG ;;
         --destination|--dst|-d  ) dst=$1; shift ;;
         --eix-update            ) eixupdate=$1; shift ;;
-        --help                  ) _help; exit ;;
+        --help|-h|-?            ) _help; exit ;;
         --man                   ) _man; exit ;;
         --portdir               ) PORTDIR=$1; shift ;;
         --rsync                 ) rsync=$1; shift ;;
@@ -280,7 +282,6 @@ mkdir -p $basedir
 tmpfile=$(mktemp -p $basedir)
 
 $rsync ${rsync_opts[@]} $src $tmpfile
-
 
 _verbose "checking whether portage was updated"
 
